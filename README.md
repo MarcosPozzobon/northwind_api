@@ -1,1 +1,1 @@
-API FICTICIA NORTHWIND;
+Northwind API project.
