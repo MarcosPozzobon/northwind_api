@@ -1,7 +1,10 @@
 package com.marcos.desenvolvimento.authapi.controllers;
 import java.util.Optional;
 
+import com.marcos.desenvolvimento.authapi.models.CustomerModel;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -38,18 +41,36 @@ public class EmployeeController {
             return ResponseEntity.status(500).build();
         }
     }
-	
-	@PostMapping("/save_new_employee")
-	public ResponseEntity<EmployeeModel> saveNewEmployee(@RequestBody EmployeeModel employee) {
-	    try {
-	        EmployeeModel newEmployee = repository.save(employee);
-	        return ResponseEntity.ok(newEmployee);
-	    } catch (Exception e) {
-	        return ResponseEntity.status(500).build();
-	    }
-	}
-	
-	@DeleteMapping("/delete_employee/{id}")
+    @PostMapping("/save_new_employee")
+    public ResponseEntity<?> saveNewEmployee(@RequestBody EmployeeModel newEmployee) {
+        try {
+            // Verifica se o funcionário já existe
+            Optional<EmployeeModel> existingEmployee = repository.findByFirstNameAndLastNameAndAddressAndZipPostalCode(
+                    newEmployee.getFirstName(), newEmployee.getLastName(),
+                    newEmployee.getAddress(), newEmployee.getZipPostalCode()
+            );
+            // Verifica se o Optional existe e se há um funcionário com as mesmas informações
+            if (existingEmployee.isPresent() &&
+                    existingEmployee.get().getFirstName().equals(newEmployee.getFirstName()) &&
+                    existingEmployee.get().getLastName().equals(newEmployee.getLastName()) &&
+                    existingEmployee.get().getAddress().equals(newEmployee.getAddress()) &&
+                    existingEmployee.get().getZipPostalCode().equals(newEmployee.getZipPostalCode())) {
+                return ResponseEntity.badRequest().body("Employee with the same information already exists.");
+            }
+            // Se não houver conflitos, salva o novo funcionário
+            EmployeeModel newEmployeeToSave = repository.save(newEmployee);
+            return ResponseEntity.ok(newEmployeeToSave);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong!");
+        }
+    }
+
+    // Método auxiliar para verificar se uma string é nula ou vazia
+    private boolean isNullOrEmpty(String str) {
+        return str == null || str.trim().isEmpty();
+    }
+    @DeleteMapping("/delete_employee/{id}")
 	public ResponseEntity<EmployeeModel> deleteEmployee(@PathVariable Long id) {
 	    try {
 	        Optional<EmployeeModel> employee = repository.findById(id);
@@ -64,8 +85,6 @@ public class EmployeeController {
 	        return ResponseEntity.status(500).build();
 	    }
 	}
-	
-	 
 	@PutMapping("/update_employee/{id}")
     public ResponseEntity<EmployeeModel> updateEmployeeInfo(@PathVariable Long id, @RequestBody EmployeeModel newEmployeeFromRequest) {
         try {
@@ -88,7 +107,7 @@ public class EmployeeController {
                 existingEmployee.setStateProvince(newEmployeeFromRequest.getStateProvince());
                 existingEmployee.setZipPostalCode(newEmployeeFromRequest.getZipPostalCode());
                 existingEmployee.setCountryRegion(newEmployeeFromRequest.getCountryRegion());
-                
+
                 repository.save(existingEmployee);
                 return ResponseEntity.ok(existingEmployee);
             } else {

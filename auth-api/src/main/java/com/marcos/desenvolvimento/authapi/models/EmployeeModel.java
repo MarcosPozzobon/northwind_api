@@ -5,65 +5,86 @@ import jakarta.persistence.Entity;
 	import jakarta.persistence.GenerationType;
 	import jakarta.persistence.Id;
 	import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
+import java.util.Arrays;
+import java.util.Objects;
 
 @Entity
 @Table(name = "employees")
 public class EmployeeModel {
-		
-		@Id
-		@GeneratedValue(strategy = GenerationType.IDENTITY)
-		private Long id;
-			
-		private String company;
-		    
-		private String lastName;
-		    
-		private String firstName;
-		    
-		private String emailAddress;
-		    
-		private String jobTitle;
-		    
-		private String businessPhone;
-		    
-		private String homePhone;
-		    
-		private String mobilePhone;
-		    
-		private String faxNumber;
-		    
-		private String address;
-		    
-		private String city;
-		    
-		private String stateProvince;
-		    
-		private String zipPostalCode;
-		    
-		private String countryRegion;
-		    
-		private String webPage;
-		    
-		private String notes;
-		    
-		private Byte[] attachments;
-		    
-		private String user;
-		    
-		private String password;
-		    
-		    
-		    
-		    
+
+	@Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
+
+	private String company;
+
+	@NotBlank
+	private String lastName;
+
+	@NotBlank
+	private String firstName;
+
+	@NotBlank
+	private String emailAddress;
+
+	private String jobTitle;
+
+	private String businessPhone;
+
+	private String homePhone;
+
+	private String mobilePhone;
+
+	private String faxNumber;
+
+	@NotBlank
+	private String address;
+
+	private String city;
+
+	private String stateProvince;
+
+	@NotBlank
+	private String zipPostalCode;
+
+	private String countryRegion;
+
+	private String webPage;
+
+	private String notes;
+
+	private Byte[] attachments;
+
+	private String user;
+
+	private String password;
+
 		    public EmployeeModel() {
 		    	
 		    }
-		    
 
-			public EmployeeModel(Long id, String company, String lastName, String firstName, String emailAddress,
-					String jobTitle, String businessPhone, String homePhone, String mobilePhone, String faxNumber,
-					String address, String city, String stateProvince, String zipPostalCode, String countryRegion,
-					String webPage, String notes, Byte[] attachments, String user, String password
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		EmployeeModel that = (EmployeeModel) o;
+		return Objects.equals(id, that.id) && Objects.equals(company, that.company) && Objects.equals(lastName, that.lastName) && Objects.equals(firstName, that.firstName) && Objects.equals(emailAddress, that.emailAddress) && Objects.equals(jobTitle, that.jobTitle) && Objects.equals(businessPhone, that.businessPhone) && Objects.equals(homePhone, that.homePhone) && Objects.equals(mobilePhone, that.mobilePhone) && Objects.equals(faxNumber, that.faxNumber) && Objects.equals(address, that.address) && Objects.equals(city, that.city) && Objects.equals(stateProvince, that.stateProvince) && Objects.equals(zipPostalCode, that.zipPostalCode) && Objects.equals(countryRegion, that.countryRegion) && Objects.equals(webPage, that.webPage) && Objects.equals(notes, that.notes) && Arrays.equals(attachments, that.attachments) && Objects.equals(user, that.user) && Objects.equals(password, that.password);
+	}
+
+	@Override
+	public int hashCode() {
+		int result = Objects.hash(id, company, lastName, firstName, emailAddress, jobTitle, businessPhone, homePhone, mobilePhone, faxNumber, address, city, stateProvince, zipPostalCode, countryRegion, webPage, notes, user, password);
+		result = 31 * result + Arrays.hashCode(attachments);
+		return result;
+	}
+
+	public EmployeeModel(Long id, String company, String lastName, String firstName, String emailAddress,
+						 String jobTitle, String businessPhone, String homePhone, String mobilePhone, String faxNumber,
+						 String address, String city, String stateProvince, String zipPostalCode, String countryRegion,
+						 String webPage, String notes, Byte[] attachments, String user, String password
 					) {
 				super();
 				this.id = id;
