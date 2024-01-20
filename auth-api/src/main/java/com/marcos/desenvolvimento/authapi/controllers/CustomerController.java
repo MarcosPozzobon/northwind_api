@@ -1,6 +1,8 @@
 package com.marcos.desenvolvimento.authapi.controllers;
 
+import com.marcos.desenvolvimento.authapi.exceptions.CustomerNotFoundException;
 import com.marcos.desenvolvimento.authapi.models.EmployeeModel;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -9,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import com.marcos.desenvolvimento.authapi.models.CustomerModel;
 import com.marcos.desenvolvimento.authapi.repositories.CustomerRepository;
 
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @RestController
@@ -17,23 +20,22 @@ public class CustomerController {
 	
 	@Autowired
 	CustomerRepository repository;
-	
-	@GetMapping("/{id}")
-	ResponseEntity<CustomerModel> getCustomerByID(@PathVariable Long id){
-		
-		try {
-            // Verifica se o funcionário com o ID fornecido existe
+
+    @GetMapping("/{id}")
+    public ResponseEntity<CustomerModel> getCustomerByID(@PathVariable Long id) {
+        try {
+            // Verifica se o cliente com o ID fornecido existe
             if (repository.existsById(id)) {
-                CustomerModel customer = repository.findById(id).get();
+                CustomerModel customer = repository.findById(id).orElse(null);
                 return ResponseEntity.ok(customer);
-            } else {
-                return ResponseEntity.notFound().build();
             }
-        } catch (Exception e) {
+        }
+        catch (Exception e) {
             return ResponseEntity.status(500).build();
         }
-		
-	}
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+    }
+
     @PostMapping("/save_new_customer")
     public ResponseEntity<?> saveNewCustomer(@RequestBody CustomerModel newCustomer) {
         try {
@@ -53,7 +55,6 @@ public class CustomerController {
             CustomerModel newCustomerToSave = repository.save(newCustomer);
             return ResponseEntity.ok(newCustomerToSave);
         } catch (Exception e) {
-            e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Something went wrong! Check your request body.");
         }
     }

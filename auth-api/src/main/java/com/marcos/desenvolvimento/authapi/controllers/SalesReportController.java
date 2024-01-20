@@ -2,6 +2,7 @@ package com.marcos.desenvolvimento.authapi.controllers;
 
 import com.marcos.desenvolvimento.authapi.models.SalesReportsModel;
 import com.marcos.desenvolvimento.authapi.repositories.SalesReportRepository;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,15 @@ public class SalesReportController {
             List<SalesReportsModel> authorizedInformation = repository.getAllAuthorizedInfo();
             return ResponseEntity.ok(authorizedInformation);
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while accessing data. You are probably not allowed to do that.");
+            ResponseEntity<String> body = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while accessing data. You are probably not allowed to do that.");
+            return body;
         }
     }
+
+    @GetMapping("/TEST")
+
+    public String test(){
+        return "test endpoint is working.";
+    }
+
 }

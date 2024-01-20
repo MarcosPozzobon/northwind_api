@@ -14,7 +14,7 @@ import javax.swing.text.html.Option;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/invoices")
+@RequestMapping("/invoices") //http://localhost:8080/invoices/12
 public class InvoiceController {
 
     @Autowired
